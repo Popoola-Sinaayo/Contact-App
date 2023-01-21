@@ -1,50 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, SectionList, Text } from "react-native";
+import { View, StyleSheet, SectionList, Text } from "react-native";
 import Row from "./Row";
 import { compareNames } from "./contacts";
+import contacts from "./contacts";
+import axios from "axios";
 
-function ContactList({ contacts }) {
-  const [sortedContacts, setSortedContacts] = useState(contacts);
+function ContactList({ navigation }) {
+  const getContacts = async () => {
+    try {
+      const response = await axios.get(
+        "https://randomuser.me/api/?results=50&nat=US"
+      );
+      const data = await response.data;
+
+      const gottenContact = data.results;
+      const newContact = await gottenContact.map((contact) => {
+        return {
+          name: `${contact.name.first} ${contact.name.last}`,
+          phone: contact.phone,
+        };
+      });
+      sortData(newContact.sort(compareNames));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const [titledContacts, setTitledContacts] = useState([]);
-  useEffect(() => {
-    setSortedContacts((oldContacts) => {
-      return oldContacts.sort(compareNames);
-    });
-  }, []);
   const extractFirstLetter = (object) => {
     return object.map((data) => data.name[0]);
   };
-  useEffect(() => {
+  const sortData = (contact) => {
     let currentIndex;
     const newArray = [];
-    const letterIndex = extractFirstLetter(sortedContacts);
+    const letterIndex = extractFirstLetter(contact);
     let firstLetter = letterIndex[0];
-    console.log(firstLetter);
     currentIndex = letterIndex.lastIndexOf(firstLetter);
-    console.log(currentIndex);
 
-    while (currentIndex < sortedContacts.length && currentIndex !== -1) {
+    while (currentIndex < contact.length && currentIndex !== -1) {
       let currrentObject = { title: firstLetter, data: [] };
       for (let i = 0; i < currentIndex + 1; i++) {
-        if (sortedContacts[i].name[0] === firstLetter)
-          currrentObject.data.push(sortedContacts[i]);
+        if (contact[i].name[0] === firstLetter)
+          currrentObject.data.push(contact[i]);
       }
-      // console.log(currrentObject);
       newArray.push(currrentObject);
       firstLetter = letterIndex[currentIndex + 1];
       currentIndex = letterIndex.lastIndexOf(firstLetter);
-      console.log(firstLetter);
-      console.log(currentIndex);
-      console.log("yes");
-      console.log(newArray);
     }
     setTitledContacts(newArray);
+  };
+  useEffect(() => {
+    getContacts();
   }, []);
-  console.log(titledContacts);
   const styles = StyleSheet.create({
+    screen: {
+      marginTop: 40,
+      flex: 1,
+      margin: 20,
+      justifyContent: "center",
+    },
     title: {
       fontSize: 20,
-      backgroundColor: "grey",
+      backgroundColor: "#ff5200",
+      color: "#fff",
       padding: 10,
       borderRadius: 20,
       width: "10%",
@@ -53,8 +70,7 @@ function ContactList({ contacts }) {
     },
   });
   return (
-    <View>
-      {/* <FlatList renderItem={({ item }) => <Row {...item} />} data={sortedContacts} /> */}
+    <View style={styles.screen}>
       <SectionList
         sections={titledContacts}
         keyExtractor={(item, index) => item + index}

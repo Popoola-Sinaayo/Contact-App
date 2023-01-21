@@ -1,12 +1,12 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 function Row({ name, phone }) {
   return (
-    <View style={styles.mainView}>
+    <TouchableOpacity style={styles.mainView} onPress={() => alert(name)}>
       <Text style={styles.textView}>Name: {name}</Text>
       <Text style={styles.textView}>Phone: {phone}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

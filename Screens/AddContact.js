@@ -2,13 +2,21 @@ import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import React, { useState } from "react";
 import Constants from "expo-constants";
 
-const AddContact = ({ addNewContact, toggleContact }) => {
+const AddContact = ({ addNewContact, navigation }) => {
   const [FirstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   // console.log(addNewContact);
   const showContact = () => {
     console.log(phone);
+  };
+  const handlePhoneChange = (phone) => {
+    console.log(parseInt(phone));
+    console.log(phone.length);
+    if (parseInt(phone) !== NaN && phone.length <= 10) {
+      console.log(phone);
+      setPhone(phone);
+    }
   };
   return (
     <View style={styles.screen}>
@@ -28,12 +36,13 @@ const AddContact = ({ addNewContact, toggleContact }) => {
       <TextInput
         style={styles.inputs}
         value={phone}
-        onChangeText={setPhone}
+        onChangeText={(data) => handlePhoneChange(data)}
         placeholder="Enter Number"
         keyboardType="numeric"
       />
       <Button
         title="Add Contact"
+        color="#ff5200"
         onPress={() => {
           setFirstName("");
           setLastName("");
@@ -44,7 +53,7 @@ const AddContact = ({ addNewContact, toggleContact }) => {
             lastName: lastName,
             phone: phone,
           });
-          toggleContact();
+          navigation.navigate("DisplayContacts");
         }}
       />
     </View>
@@ -61,10 +70,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   inputs: {
-    borderWidth: 2,
+    borderBottomWidth: 2,
     borderBottom: 2,
     borderRadius: 10,
-    borderColor: "black",
+    borderColor: "#ff5200",
     paddingLeft: 10,
     marginBottom: 10,
     paddingTop: 10,
@@ -74,5 +83,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     marginBottom: 30,
+    color: "#ff5200",
   },
 });
